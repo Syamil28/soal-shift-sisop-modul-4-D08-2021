@@ -1,3 +1,4 @@
+![Uploading Screenshot (125).png…]()
 # soal-shift-sisop-modul-4-D08-2021
 
 ## **Soal 1**
