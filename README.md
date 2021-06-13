@@ -1,4 +1,4 @@
-![Uploading Screenshot (125).png…]()
+
 # soal-shift-sisop-modul-4-D08-2021
 
 ## **Soal 1**
@@ -175,5 +175,17 @@ Ketika diakses melalui filesystem hanya akan muncul Suatu_File.txt
 
 
 ### Screenshot
--
+- Membuat direktori baru dan menjalankan FUSE:
+![Screenshot (125)](https://user-images.githubusercontent.com/62102884/121807576-ad035b00-cc8f-11eb-9ed7-aea1a2b32896.png)
 
+- Muncul FUSE sesuai nama direktorinya, dengan isi dari folder Downloads:
+![Screenshot (126)](https://user-images.githubusercontent.com/62102884/121807569-a379f300-cc8f-11eb-9b28-2e85aeaabb2c.png)
+
+- Isi dari direktori "contoh" (tanpa awalan `RX_`):
+![Screenshot (127)](https://user-images.githubusercontent.com/62102884/121807619-e5a33480-cc8f-11eb-9c85-0eb0aefc7906.png)
+
+- Setelah folder direname dengan awalan `RX_`:
+![Screenshot (128)](https://user-images.githubusercontent.com/62102884/121807700-361a9200-cc90-11eb-8f53-77f62bc7af6d.png)
+
+- isi dari file *SinSeiFS.log* ketika telah dilakukan re-name, make directory, dan remove folder/file
+![Screenshot (129)](https://user-images.githubusercontent.com/62102884/121807803-a7f2db80-cc90-11eb-87e3-8978b06ce351.png)
