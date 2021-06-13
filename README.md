@@ -187,7 +187,7 @@ Ketika diakses melalui filesystem hanya akan muncul Suatu_File.txt
 - Setelah folder direname dengan awalan `RX_`:
 ![Screenshot (128)](https://user-images.githubusercontent.com/62102884/121807700-361a9200-cc90-11eb-8f53-77f62bc7af6d.png)
 
-- isi dari file *SinSeiFS.log* ketika telah dilakukan re-name, make directory, dan remove folder/file
+- isi dari file *SinSeiFS.log* ketika telah dilakukan re-name, make directory, dan remove folder/file:
 ![Screenshot (129)](https://user-images.githubusercontent.com/62102884/121807803-a7f2db80-cc90-11eb-87e3-8978b06ce351.png)
 
 ### Kendala
