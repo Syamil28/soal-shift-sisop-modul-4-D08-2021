@@ -189,3 +189,8 @@ Ketika diakses melalui filesystem hanya akan muncul Suatu_File.txt
 
 - isi dari file *SinSeiFS.log* ketika telah dilakukan re-name, make directory, dan remove folder/file
 ![Screenshot (129)](https://user-images.githubusercontent.com/62102884/121807803-a7f2db80-cc90-11eb-87e3-8978b06ce351.png)
+
+### Kendala
+1. masih belum bisa menemukan cara untuk mengerjakan point e
+2. sempat bingung dengan cara agar bisa melakukan encode
+3. sempat bingung dengan cara agar bisa mendapatkan real path dari direktori pada folder mount
