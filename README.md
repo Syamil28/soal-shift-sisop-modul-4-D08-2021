@@ -96,6 +96,9 @@ Metode encode melihat tanda `/` untuk bisa memisahkan antar direktorinya. Jika d
 - Setelah folder direname dengan awalan AtoZ:
 ![pict](https://i.postimg.cc/9X1jcr9c/Virtual-Box-Ubuntu-New-12-06-2021-22-19-32.png)
 
+### Kendala
+Kesulitan dalam menggunakan fuse_operation
+
 ## **Soal 2**
 ### Penjelasan Soal
 Selain itu Sei mengusulkan untuk membuat metode enkripsi tambahan agar data pada komputer mereka semakin aman. Berikut rancangan metode enkripsi tambahan yang dirancang oleh Sei
@@ -147,7 +150,7 @@ void decryptvigenere(char *str) {
 }
 ```
 
-d. etiap pembuatan direktori terencode (mkdir atau rename) akan tercatat ke sebuah log file beserta methodnya (apakah itu mkdir atau rename).
+d. Setiap pembuatan direktori terencode (mkdir atau rename) akan tercatat ke sebuah log file beserta methodnya (apakah itu mkdir atau rename).
 Pada fuse_operation `rename`, dipanggil fungsi `log1()`. Fungsi `log1()` mencatat perubahan nama dan menyimpannya ke sebuah log.
 ```
 void log1(char *from, char *to) {
@@ -194,3 +197,61 @@ Ketika diakses melalui filesystem hanya akan muncul Suatu_File.txt
 1. masih belum bisa menemukan cara untuk mengerjakan point e
 2. sempat bingung dengan cara agar bisa melakukan encode
 3. sempat bingung dengan cara agar bisa mendapatkan real path dari direktori pada folder mount
+
+## **Soal 4**
+### Penjelasan Soal
+Untuk memudahkan dalam memonitor kegiatan pada filesystem mereka Sin dan Sei membuat sebuah log system dengan spesifikasi sebagai berikut.
+
+a. Log system yang akan terbentuk bernama “SinSeiFS.log” pada direktori home pengguna (/home/[user]/SinSeiFS.log). Log system ini akan menyimpan daftar perintah system call yang telah dijalankan pada filesystem.
+
+b. Karena Sin dan Sei suka kerapian maka log yang dibuat akan dibagi menjadi dua level, yaitu INFO dan WARNING.
+
+c. Untuk log level WARNING, digunakan untuk mencatat syscall rmdir dan unlink.
+
+d. Sisanya, akan dicatat pada level INFO.
+
+e. Format untuk logging yaitu:
+
+``
+[Level]::[dd][mm][yyyy]-[HH]:[MM]:[SS]:[CMD]::[DESC :: DESC]
+``
+
+Level : Level logging, dd : 2 digit tanggal, mm : 2 digit bulan, yyyy : 4 digit tahun, HH : 2 digit jam (format 24 Jam),MM : 2 digit menit, SS : 2 digit detik, CMD : System Call yang terpanggil, DESC : informasi dan parameter tambahan
+
+```
+INFO::28052021-10:00:00:CREATE::/test.txt
+INFO::28052021-10:01:00:RENAME::/test.txt::/rename.txt
+```
+### Penyelesaian
+Membuat fungsi `log_no4()` untuk menyimpan isi log system sesuai dengan format logging yang ditentukan.
+```
+static char *logpath = "/home/yudo/SinSeiFS.log";
+
+void log_no4(char *str, int type) {
+    FILE *log_file = fopen(logpath, "a");
+
+    time_t current_time;
+    time(&current_time);
+    struct tm *time_info;
+    time_info = localtime(&current_time);
+
+    if (type == INFO) {
+        fprintf(log_file, "INFO::%.2d%.2d%d-%.2d:%.2d:%.2d:%s\n", time_info->tm_mday, time_info->tm_mon+1, time_info->tm_year+1900, time_info->tm_hour, time_info->tm_min, time_info->tm_sec, str);
+    } else if (type == WARNING) {
+        fprintf(log_file, "WARNING::%.2d%.2d%d-%.2d:%.2d:%.2d:%s\n", time_info->tm_mday, time_info->tm_mon+1, time_info->tm_year+1900, time_info->tm_hour, time_info->tm_min, time_info->tm_sec, str);
+    }
+}
+```
+File “SinSeiFS.log” dibuat langsung dengan pathnya agar terbuat di home.
+
+Untuk membedakan level log, pada fuse_operation yang berkaitan dengan kegiatan pada filesystem, memanggil fungsi `log_no4()` dengan parameter level yang sesuai dengan soal. Syscall rmdir dan unlink mempassing parameter `WARNING`, selain itu passing parameter `INFO`. Salah satu contoh pada fuse_operation `xmp_unlink`:
+```
+    sprintf(str, "REMOVE::%s", path);
+    log_v2(str, WARNING);
+```
+### Screenshot
+- Isi “SinSeiFS.log” setelah melakukan kegiatan dengan filesystem:
+![pict](https://i.postimg.cc/CLwNmhMt/Virtual-Box-Ubuntu-New-13-06-2021-19-29-35.png)
+
+### Kendala
+Kesulitan dalam menggunakan fuse_operation
