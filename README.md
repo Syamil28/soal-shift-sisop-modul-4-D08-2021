@@ -19,7 +19,7 @@ Men-scan kata "AtoZ" pada nama direktori:
 Jika terdapat awalan "AtoZ" memanggil fungsi `encode_atbash()`
 ```
         if (enc1 != NULL) {
-            encode_atbash(de->d_name);
+            decryptvigenere(de->d_name);
             printf("== readdir::encode:%s\n", de->d_name);
         }
 ```
@@ -29,7 +29,7 @@ Sama seperti poin a, jika terdapat awalan "AtoZ" akan memenggil fungsi `encode_a
 
 c. Apabila direktori yang terenkripsi di-rename menjadi tidak ter-encode, maka isi direktori tersebut akan terdecode.
 
-Agar menjadi tidak ter-encode, berarti awalan "AtoZ" dari penamaan direktori dihapus. Jika pada awalan direktori tidak ada "AtoZ", akan memanggil fungsi `decode_atbash()`.
+Agar menjadi tidak ter-encode, berarti awalan "AtoZ" dari penamaan direktori dihapus. Jika pada awalan direktori tidak ada "AtoZ", akan memanggil fungsi `decryptvigenere()`.
 ```
 void decode_atbash(char *str) {
     if (!strcmp(str, ".") || !strcmp(str, "..")) return;
@@ -94,3 +94,85 @@ Metode encode melihat tanda `/` untuk bisa memisahkan antar direktorinya. Jika d
 
 - Setelah folder direname dengan awalan AtoZ:
 ![pict](https://i.postimg.cc/9X1jcr9c/Virtual-Box-Ubuntu-New-12-06-2021-22-19-32.png)
+
+## **Soal 2**
+### Penjelasan Soal
+Selain itu Sei mengusulkan untuk membuat metode enkripsi tambahan agar data pada komputer mereka semakin aman. Berikut rancangan metode enkripsi tambahan yang dirancang oleh Sei
+
+ a. Jika sebuah direktori dibuat dengan awalan “RX_[Nama]”, maka direktori tersebut akan menjadi direktori terencode beserta isinya dengan perubahan nama isi sesuai kasus nomor 1 dengan algoritma tambahan ROT13 (Atbash + ROT13).
+
+```
+    char *enc2 = strstr(path, RX);
+```
+Jika terdapat awalan "RX_" program akn memanggil fungsi `encode_atbash()`
+```
+    else if (enc2 != NULL) {
+        printf("YEY::getattr:%s\n", path);
+        decryptvigenere(enc2);
+    }
+```
+
+ b. Jika sebuah direktori di-rename dengan awalan “RX_[Nama]”, maka direktori tersebut akan menjadi direktori terencode beserta isinya dengan perubahan nama isi sesuai dengan kasus nomor 1 dengan algoritma tambahan Vigenere Cipher dengan key “SISOP” (Case-sensitive, Atbash + Vigenere).
+sama seperti pada poin a jika terdapat folder dengan awalan `RX_` maka program akan menjalanka fungsi `encryptyvigenere` dan dilakukan encode.
+
+c. Apabila direktori yang terencode di-rename (Dihilangkan “RX_” nya), maka folder menjadi tidak terencode dan isi direktori tersebut akan terdecode berdasar nama aslinya.
+Agar menjadi tidak ter-encode, berarti awalan `RX_` dari penamaan direktori harus dihapus atau di re-name. Jika pada awalan direktori tidak ada `RX_`, maka program akan akan memanggil fungsi `decryptvigenere()`.
+```
+void decryptvigenere(char *str) {
+    if (!strcmp(str, ".") || !strcmp(str, "..")) return;
+    if (strstr(str, "/") == NULL) return;
+    printf("==== before:%s\n", str);
+    
+    int str_length = strlen(str);
+    int start=0;
+    int i;
+    for (i = str_length; i >= 0; i--) {
+        if (str[i] == '/') break;
+
+        if (str[i] == '.') {
+            str_length = i;
+            break;
+        }
+    }
+    for (i = 0; i < str_length; i++) {
+        if (str[i] == '/') {
+            start = i + 1;
+            break;
+        }
+    }
+
+    atbash(str, start, str_length);
+    printf("==== dec:atb:%s\n", str);
+}
+```
+
+d. etiap pembuatan direktori terencode (mkdir atau rename) akan tercatat ke sebuah log file beserta methodnya (apakah itu mkdir atau rename).
+Pada fuse_operation `rename`, dipanggil fungsi `log1()`. Fungsi `log1()` mencatat perubahan nama dan menyimpannya ke sebuah log.
+```
+void log1(char *from, char *to) {
+    int i;
+    for (i = strlen(to); i >= 0; i--) {
+        if (to[i] == '/') 
+          break;
+    }
+    if (strstr(to + i, ATOZ) == NULL) 
+      return;
+
+    FILE *log_file = fopen(logpath, "a");
+    fprintf(log_file, "%s -> %s\n", from, to);
+}
+
+```
+
+e. Pada metode enkripsi ini, file-file pada direktori asli akan menjadi terpecah menjadi file-file kecil sebesar 1024 bytes, sementara jika diakses melalui filesystem rancangan Sin dan Sei akan menjadi normal. Sebagai contoh, Suatu_File.txt berukuran 3 kiloBytes pada directory asli akan menjadi 3 file kecil yakni:
+
+Suatu_File.txt.0000
+Suatu_File.txt.0001
+Suatu_File.txt.0002
+
+Ketika diakses melalui filesystem hanya akan muncul Suatu_File.txt
+
+
+### Screenshot
+-
+
